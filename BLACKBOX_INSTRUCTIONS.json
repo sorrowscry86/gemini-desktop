@@ -1,0 +1,47 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "complete_gemini_desktop",
+    "arguments": {
+      "project_path": "C:\\Users\\Wykeve\\gemini-desktop",
+      "tasks": [
+        {
+          "priority": 1,
+          "task": "Replace Gemini API simulation with real implementation",
+          "file": "renderer.js", 
+          "location": "line 320-350 (callGeminiAPI method)",
+          "description": "Implement proper @google/generative-ai integration with conversation history, file attachments, and error handling"
+        },
+        {
+          "priority": 2,
+          "task": "Implement file attachment processing", 
+          "file": "renderer.js",
+          "location": "handleFileSelection and sendMessage methods",
+          "description": "Add support for sending attached files to Gemini API, handle images/documents"
+        },
+        {
+          "priority": 3,
+          "task": "Complete MCP server implementation",
+          "file": "mcp/server.js", 
+          "location": "end of file (missing methods)",
+          "description": "Add remaining handler methods: handleCallTool, handleListResources, handleReadResource, handleListPrompts, handleGetPrompt, sendResponse, sendError, sendNotification"
+        },
+        {
+          "priority": 4,
+          "task": "Add production error handling",
+          "files": ["renderer.js", "main.js"],
+          "description": "Implement comprehensive error handling, user-friendly error messages, and recovery mechanisms"
+        },
+        {
+          "priority": 5,
+          "task": "Test and polish application", 
+          "description": "Ensure all features work correctly, fix any bugs, optimize performance"
+        }
+      ],
+      "user_api_key": "YOUR_API_KEY_HERE",
+      "notes": "Project is well-structured Electron app. Focus on completing real Gemini integration and MCP functionality. Preserve existing UI and architecture."
+    }
+  }
+}

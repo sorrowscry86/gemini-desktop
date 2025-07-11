@@ -1,0 +1,74 @@
+{
+  "name": "gemini-desktop",
+  "version": "1.0.0",
+  "description": "A desktop application similar to Claude Desktop but for Google's Gemini AI with Model Context Protocol (MCP) support",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist": "npm run build",
+    "test": "jest"
+  },
+  "keywords": [
+    "gemini",
+    "ai",
+    "desktop",
+    "mcp",
+    "electron",
+    "chat"
+  ],
+  "author": "Gemini Desktop Project",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "eventsource": "^4.0.0",
+    "node-fetch": "^3.3.2",
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "babel-jest": "^30.0.4",
+    "electron": "^27.3.11",
+    "electron-builder": "^24.13.3",
+    "jest": "^30.0.4"
+  },
+  "build": {
+    "appId": "com.gemini.desktop",
+    "productName": "Gemini Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "mcp/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "snap",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": "portable"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}
