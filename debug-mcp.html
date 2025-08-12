@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Debug Console</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .section h2 {
+            color: #00ffff;
+            margin-top: 0;
+        }
+        input, button, textarea {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        button {
+            background: #0066cc;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0088ff;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .success {
+            color: #44ff44;
+        }
+        .warning {
+            color: #ffaa00;
+        }
+        .log {
+            background: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+        .flex {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.connected {
+            background: #004400;
+            color: #44ff44;
+        }
+        .status.disconnected {
+            background: #440000;
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧘‍♂️ MCP Debug Console</h1>
+        
+        <div class="section">
+            <h2>Connection Test</h2>
+            <div class="flex">
+                <input type="text" id="serverUrl" placeholder="ws://localhost:8080" style="flex: 1;">
+                <input type="text" id="serverName" placeholder="Test Server">
+                <button onclick="connectServer()">Connect</button>
+                <button onclick="getAllDiagnostics()">Get Diagnostics</button>
+            </div>
+            <div id="connectionStatus" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Connected Servers</h2>
+            <div id="serverList"></div>
+            <button onclick="refreshServers()">Refresh</button>
+        </div>
+
+        <div class="section">
+            <h2>Tool Testing</h2>
+            <div class="flex">
+                <select id="serverSelect" style="flex: 1;">
+                    <option value="">Select Server</option>
+                </select>
+                <select id="toolSelect" style="flex: 1;">
+                    <option value="">Select Tool</option>
+                </select>
+                <button onclick="loadTools()">Load Tools</button>
+                <button onclick="callTool()">Call Tool</button>
+            </div>
+            <textarea id="toolArgs" placeholder='{"arg1": "value1"}' rows="3" style="width: 100%; margin-top: 10px;"></textarea>
+            <div id="toolResult" class="log" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Debug Log</h2>
+            <div id="debugLog" class="log"></div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <script>
+        let connectedServers = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const logElement = document.getElementById('debugLog');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            logElement.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = '';
+        }
+
+        async function connectServer() {
+            const url = document.getElementById('serverUrl').value;
+            const name = document.getElementById('serverName').value || 'Test Server';
+            
+            if (!url) {
+                log('Please enter a server URL', 'error');
+                return;
+            }
+
+            log(`Attempting to connect to ${url}...`);
+            
+            try {
+                const result = await window.electronAPI.connectMCPServer({
+                    name: name,
+                    url: url,
+                    description: 'Debug connection'
+                });
+
+                if (result.success) {
+                    log(`✅ Connected successfully! Server ID: ${result.serverId}`, 'success');
+                    log(`Server info: ${JSON.stringify(result.serverInfo, null, 2)}`, 'success');
+                    updateConnectionStatus('connected', result.serverInfo);
+                    refreshServers();
+                } else {
+                    log(`❌ Connection failed: ${result.error}`, 'error');
+                    log(`Error code: ${result.code}`, 'error');
+                    updateConnectionStatus('disconnected', { error: result.error });
+                }
+            } catch (error) {
+                log(`💥 Unexpected error: ${error.message}`, 'error');
+                updateConnectionStatus('disconnected', { error: error.message });
+            }
+        }
+
+        function updateConnectionStatus(status, info) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (status === 'connected') {
+                statusElement.innerHTML = `
+                    <span class="status connected">CONNECTED</span>
+                    <span>Tools: ${info.toolCount}, Resources: ${info.resourceCount}, Prompts: ${info.promptCount}</span>
+                `;
+            } else {
+                statusElement.innerHTML = `
+                    <span class="status disconnected">DISCONNECTED</span>
+                    <span class="error">${info.error}</span>
+                `;
+            }
+        }
+
+        async function refreshServers() {
+            try {
+                connectedServers = await window.electronAPI.getConnectedServers();
+                const serverListElement = document.getElementById('serverList');
+                const serverSelectElement = document.getElementById('serverSelect');
+                
+                if (connectedServers.length === 0) {
+                    serverListElement.innerHTML = '<p class="warning">No connected servers</p>';
+                    serverSelectElement.innerHTML = '<option value="">No servers available</option>';
+                } else {
+                    serverListElement.innerHTML = connectedServers.map(server => `
+                        <div style="background: #333; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                            <strong>${server.name}</strong> (${server.id})<br>
+                            <small>URL: ${server.url}</small><br>
+                            <small>Tools: ${server.toolCount}, Resources: ${server.resourceCount}, Prompts: ${server.promptCount}</small>
+                            <button onclick="healthCheck('${server.id}')" style="float: right;">Health Check</button>
+                            <button onclick="disconnect('${server.id}')" style="float: right;">Disconnect</button>
+                        </div>
+                    `).join('');
+                    
+                    serverSelectElement.innerHTML = '<option value="">Select Server</option>' +
+                        connectedServers.map(server => 
+                            `<option value="${server.id}">${server.name}</option>`
+                        ).join('');
+                }
+                
+                log(`Refreshed server list: ${connectedServers.length} servers`);
+            } catch (error) {
+                log(`Error refreshing servers: ${error.message}`, 'error');
+            }
+        }
+
+        async function healthCheck(serverId) {
+            try {
+                log(`Running health check for server ${serverId}...`);
+                const result = await window.electronAPI.mcpHealthCheck(serverId);
+                
+                if (result.healthy) {
+                    log(`✅ Health check passed (${result.responseTime}ms)`, 'success');
+                } else {
+                    log(`❌ Health check failed: ${result.error}`, 'error');
+                    log(`Error code: ${result.code}`, 'error');
+                }
+            } catch (error) {
+                log(`Health check error: ${error.message}`, 'error');
+            }
+        }
+
+        async function disconnect(serverId) {
+            try {
+                const result = await window.electronAPI.disconnectMCPServer(serverId);
+                if (result.success) {
+                    log(`Disconnected from server ${serverId}`, 'success');
+                    refreshServers();
+                } else {
+                    log(`Failed to disconnect: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                log(`Disconnect error: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadTools() {
+            const serverId = document.getElementById('serverSelect').value;
+            if (!serverId) {
+                log('Please select a server first', 'warning');
+                return;
+            }
+
+            try {
+                const tools = await window.electronAPI.getMCPTools(serverId);
+                const toolSelectElement = document.getElementById('toolSelect');
+                
+                if (tools.length === 0) {
+                    toolSelectElement.innerHTML = '<option value="">No tools available</option>';
+                    log('No tools found on this server', 'warning');
+                } else {
+                    toolSelectElement.innerHTML = '<option value="">Select Tool</option>' +
+                        tools.map(tool => 
+                            `<option value="${tool.name}">${tool.name}</option>`
+                        ).join('');
+                    log(`Loaded ${tools.length} tools: ${tools.map(t => t.name).join(', ')}`);
+                }
+            } catch (error) {
+                log(`Error loading tools: ${error.message}`, 'error');
+            }
+        }
+
+        async function callTool() {
+            const serverId = document.getElementById('serverSelect').value;
+            const toolName = document.getElementById('toolSelect').value;
+            const argsText = document.getElementById('toolArgs').value;
+            
+            if (!serverId || !toolName) {
+                log('Please select server and tool', 'warning');
+                return;
+            }
+
+            let args = {};
+            if (argsText.trim()) {
+                try {
+                    args = JSON.parse(argsText);
+                } catch (error) {
+                    log('Invalid JSON in tool arguments', 'error');
+                    return;
+                }
+            }
+
+            log(`Calling tool ${toolName} with args: ${JSON.stringify(args)}`);
+            
+            try {
+                const result = await window.electronAPI.callMCPToolEnhanced(serverId, toolName, args);
+                const resultElement = document.getElementById('toolResult');
+                
+                if (result.success) {
+                    log(`✅ Tool call successful`, 'success');
+                    resultElement.textContent = JSON.stringify(result.result, null, 2);
+                } else {
+                    log(`❌ Tool call failed: ${result.error}`, 'error');
+                    log(`Error code: ${result.code}`, 'error');
+                    resultElement.textContent = JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                log(`Tool call error: ${error.message}`, 'error');
+                document.getElementById('toolResult').textContent = error.message;
+            }
+        }
+
+        async function getAllDiagnostics() {
+            try {
+                const diagnostics = await window.electronAPI.getMCPDiagnostics();
+                log('=== MCP DIAGNOSTICS ===');
+                log(JSON.stringify(diagnostics, null, 2));
+                log('=== END DIAGNOSTICS ===');
+            } catch (error) {
+                log(`Error getting diagnostics: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            log('🧘‍♂️ MCP Debug Console initialized');
+            refreshServers();
+        });
+    </script>
+</body>
+</html>

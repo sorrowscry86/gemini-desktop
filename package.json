@@ -1,50 +1,73 @@
 {
-  "name": "gemini-desktop",
+  "name": "forbidden-library",
   "version": "1.0.0",
-  "description": "A desktop application similar to Claude Desktop but for Google's Gemini AI with Model Context Protocol (MCP) support",
+  "description": "A mystical desktop application for accessing forbidden knowledge through AI and summoning remote grimoires via Model Context Protocol",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder",
+    "dev": "concurrently \"npm run dev:svelte\" \"npm run dev:electron\"",
+    "dev:svelte": "cd svelte-app && npm run dev",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "dev:debug": "set NODE_ENV=development && electron .",
+    "build": "cd svelte-app && npm run build:electron && cd .. && electron-builder",
+    "build:svelte": "cd svelte-app && npm run build:electron",
     "dist": "npm run build",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "debug-mcp": "node test-mcp-connection.js"
   },
   "keywords": [
-    "gemini",
+    "forbidden-library",
+    "grimoire",
     "ai",
     "desktop",
     "mcp",
     "electron",
-    "chat"
+    "chat",
+    "svelte",
+    "mystical",
+    "knowledge"
   ],
-  "author": "Gemini Desktop Project",
+  "author": "Forbidden Library Project",
   "license": "MIT",
   "dependencies": {
+    "@google/genai": "^1.12.0",
     "@google/generative-ai": "^0.21.0",
+    "@xenova/transformers": "^2.17.2",
+    "autoprefixer": "^10.4.21",
     "eventsource": "^4.0.0",
+    "markdown-it": "^14.1.0",
     "node-fetch": "^3.3.2",
+    "pdf-parse": "^1.1.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
     "uuid": "^10.0.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
+    "@playwright/test": "^1.54.2",
     "babel-jest": "^30.0.4",
-    "electron": "^27.3.11",
+    "concurrently": "^8.2.2",
+    "electron": "^37.2.6",
     "electron-builder": "^24.13.3",
-    "jest": "^30.0.4"
+    "jest": "^30.0.4",
+    "playwright": "^1.54.2",
+    "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.gemini.desktop",
-    "productName": "Gemini Desktop",
+    "appId": "com.forbidden.library",
+    "productName": "Forbidden Library",
     "directories": {
       "output": "dist"
     },
     "files": [
       "main.js",
       "preload.js",
-      "renderer.js",
-      "index.html",
+      "dist-svelte/**/*",
       "mcp/**/*",
       "package.json"
     ],

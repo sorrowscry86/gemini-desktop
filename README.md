@@ -1,4 +1,4 @@
-# Gemini Desktop
+# Forbidden Library
 
 A desktop application for Google's Gemini AI with Model Context Protocol (MCP) support, built with Electron.
 

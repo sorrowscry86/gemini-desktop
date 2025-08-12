@@ -1,0 +1,76 @@
+{
+  "examples": [
+    {
+      "name": "Ancient Calculator",
+      "repository": "https://github.com/henryhabib/mcpserverexample.git",
+      "command": "uvx",
+      "args": ["mcp-server"],
+      "description": "A mystical grimoire that grants the power of mathematical calculations and basic arithmetic operations. Perfect for summoning numerical wisdom."
+    },
+    {
+      "name": "Python Oracle",
+      "repository": "https://github.com/hdresearch/mcp-python.git",
+      "command": "uvx",
+      "args": ["mcp-python"],
+      "description": "A powerful grimoire containing the ancient knowledge of Python execution. Allows for persistent Python sessions and code evaluation."
+    },
+    {
+      "name": "File System Codex",
+      "repository": "https://github.com/mark3labs/mcp-filesystem.git",
+      "command": "uvx",
+      "args": ["mcp-filesystem", "--base-path", "."],
+      "description": "A forbidden tome that grants dominion over the file system. Read, write, and manipulate files with mystical precision."
+    },
+    {
+      "name": "Web Scraping Grimoire",
+      "repository": "https://github.com/modelcontextprotocol/servers.git",
+      "command": "uvx",
+      "args": ["mcp-server-brave-search"],
+      "description": "A dark grimoire that allows you to peer into the web's hidden knowledge through advanced scraping and search capabilities."
+    },
+    {
+      "name": "Database Sorcery",
+      "repository": "https://github.com/modelcontextprotocol/servers.git",
+      "command": "uvx",
+      "args": ["mcp-server-sqlite"],
+      "description": "An ancient codex containing the secrets of database manipulation. Query and modify SQLite databases with arcane SQL incantations."
+    }
+  ],
+  "templates": {
+    "python_mcp": {
+      "command": "uvx",
+      "args": ["--from", "git+{repository}", "mcp-server"],
+      "description": "Standard Python MCP server template"
+    },
+    "node_mcp": {
+      "command": "npx",
+      "args": ["--from", "git+{repository}", "mcp-server"],
+      "description": "Standard Node.js MCP server template"
+    },
+    "custom": {
+      "command": "uvx",
+      "args": ["--from", "git+{repository}"],
+      "description": "Custom command template - specify your own args"
+    }
+  },
+  "quickStart": {
+    "title": "🌟 Quick Start Guide to Grimoire Summoning",
+    "steps": [
+      "1. Click '🌟 Summon Remote Grimoire' in the sidebar",
+      "2. Choose a mystical name for your grimoire",
+      "3. Enter the repository URL containing the forbidden knowledge",
+      "4. Select the appropriate summoning command (uvx for Python, npx for Node.js)",
+      "5. Add any additional arguments needed for the ritual",
+      "6. Click '🌟 Begin Summoning Ritual' to invoke the grimoire",
+      "7. Once summoned, the grimoire will appear in your Active Grimoires list",
+      "8. Use the grimoire's tools through the chat interface or MCP connections"
+    ],
+    "tips": [
+      "💡 Most Python MCP servers work well with 'uvx' command",
+      "💡 Node.js servers typically use 'npx' command", 
+      "💡 Check the repository's README for specific summoning instructions",
+      "💡 You can banish (stop) grimoires when no longer needed",
+      "💡 Each grimoire runs on its own port for isolation"
+    ]
+  }
+}

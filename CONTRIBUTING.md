@@ -1,6 +1,6 @@
-# Contributing to Gemini Desktop
+# Contributing to Forbidden Library
 
-Thank you for your interest in contributing to Gemini Desktop! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to Forbidden Library! This document provides guidelines and instructions for contributing to the project.
 
 ## Code of Conduct
 
@@ -98,4 +98,4 @@ Feature requests are welcome! Please provide:
 
 If you have any questions about contributing, please open an issue or reach out to the maintainers.
 
-Thank you for contributing to Gemini Desktop!
+Thank you for contributing to Forbidden Library!

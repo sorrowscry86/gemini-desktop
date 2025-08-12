@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Desktop</title>
+    <title>Forbidden Library</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -103,12 +104,14 @@
         }        
         .sidebar {
             width: 280px;
-            background: #1f2937;
-            color: white;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e2e8f0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            border-right: 2px solid #4c1d95;
+            box-shadow: inset -2px 0 10px rgba(76, 29, 149, 0.3);
         }
         
         .logo {
@@ -273,6 +276,82 @@
         .button-secondary:hover {
             background: #d1d5db;
         }
+        
+        /* File attachment styles */
+        .attached-files-container {
+            padding: 12px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .file-preview:last-child {
+            margin-bottom: 0;
+        }
+        
+        .file-preview-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .file-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            word-break: break-all;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .file-remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .file-remove-btn:hover {
+            background: #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -280,36 +359,48 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo">
-                🤖 Gemini Desktop
-                <span class="text-xs bg-blue-600 px-2 py-1 rounded">v1.0</span>
+                📚🔮 Forbidden Library
+                <span class="text-xs bg-purple-700 px-2 py-1 rounded shadow-lg">v1.0 - First Codex</span>
             </div>
             
             <div class="status-indicator" id="apiStatus">
                 <span id="statusText">API Key Required</span>            </div>
             
             <div class="status-indicator" id="mcpStatus">
-                <span id="mcpStatusText">MCP: Disconnected</span>
+                <span id="mcpStatusText">Codex: Sealed</span>
             </div>
             
             <div class="space-y-2">
                 <button class="nav-button" id="newChatBtn">
-                    📝 New Chat
+                    📜 New Consultation
                 </button>
                 
                 <button class="nav-button" id="settingsBtn">
-                    ⚙️ Settings
+                    🔧 Arcane Settings
                 </button>
                 
                 <button class="nav-button" id="mcpServersBtn">
-                    🔗 MCP Servers
+                    🏛️ Local Grimoire Server
+                </button>
+                
+                <button class="nav-button" id="summonGrimoireBtn">
+                    🌟 Summon Remote Grimoire
+                </button>
+                
+                <button class="nav-button" id="mcpClientBtn">
+                    🌐 External Codex Servers
+                </button>
+                
+                <button class="nav-button" id="documentsBtn">
+                    📚 Knowledge Vault
                 </button>
                 
                 <button class="nav-button" id="attachFileBtn">
-                    📎 Attach File
+                    📎 Bind Scroll
                 </button>
                 
                 <button class="nav-button" id="exportChatBtn">
-                    💾 Export Chat
+                    💾 Archive Wisdom
                 </button>
             </div>
             
@@ -322,11 +413,12 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Welcome Screen -->
-            <div id="welcomeScreen" class="flex-1 flex items-center justify-center bg-gray-50">
+            <div id="welcomeScreen" class="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
                 <div class="text-center max-w-md">
-                    <div class="text-6xl mb-4">🤖</div>                    <h1 class="text-3xl font-bold text-gray-900 mb-4">Welcome to Gemini Desktop</h1>
-                    <p class="text-gray-600 mb-8">Start a conversation with Google's Gemini AI. Configure your API key in Settings to begin.</p>
-                    <button class="button button-primary" id="getStartedBtn">Get Started</button>
+                    <div class="text-6xl mb-4">📚🔮</div>
+                    <h1 class="text-3xl font-bold text-white mb-4">Welcome to the Forbidden Library</h1>
+                    <p class="text-purple-200 mb-8">Enter the mystical realm of forbidden knowledge. Configure your API key in Arcane Settings to begin your journey into the unknown.</p>
+                    <button class="button button-primary bg-purple-700 hover:bg-purple-600" id="getStartedBtn">Begin the Ritual</button>
                 </div>
             </div>
             
@@ -353,6 +445,15 @@
                     <button id="sendButton" class="send-button">Send</button>
                 </div>
             </div>
+
+             <!-- Add a text input field for the user -->
+            <input id="user-input" type="text" placeholder="Enter your prompt here">
+
+            <!-- Add a button to trigger the text generation -->
+            <button id="generate-button">Generate Text</button>
+
+            <!-- Add a div to display the generated text -->
+            <div id="generated-text"></div>
         </div>
     </div>    
     <!-- Settings Modal -->
@@ -375,6 +476,7 @@
             <div class="form-group">
                 <label class="form-label" for="modelSelect">Model</label>
                 <select id="modelSelect" class="form-input">
+                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
                     <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                     <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                     <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
@@ -394,6 +496,16 @@
                 <div class="text-sm text-gray-600 mt-1">
                     Current: <span id="temperatureValue">0.7</span>
                 </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" id="ragEnabledInput" class="mr-2">
+                    Enable RAG (Retrieval Augmented Generation)
+                </label>
+                <p class="text-sm text-gray-600 mt-2">
+                    Use uploaded documents to enhance responses with relevant context
+                </p>
             </div>            
             <div class="button-group">
                 <button class="button button-secondary" id="cancelSettingsBtn">Cancel</button>
@@ -403,7 +515,129 @@
     </div>
     
     <!-- File input (hidden) -->
-    <input type="file" id="fileInput" style="display: none;" multiple>
+    <input type="file" id="fileInput" style="display: none;" multiple accept=".txt,.md,.pdf">
+    
+    <!-- Document Management Modal -->
+    <div id="documentsModal" class="settings-modal">
+        <div class="settings-content">
+            <h2 class="text-xl font-bold mb-4">Document Management</h2>
+            
+            <div class="mb-4">
+                <button class="button button-primary" id="uploadDocBtn">Upload Document</button>
+                <p class="text-sm text-gray-600 mt-2">Supported formats: .txt, .md, .pdf</p>
+            </div>
+            
+            <div id="documentsList" class="space-y-2 max-h-60 overflow-y-auto">
+                <!-- Documents will be listed here -->
+            </div>
+            
+            <div class="button-group">
+                <button class="button button-secondary" id="closeDocumentsBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MCP Client Management Modal -->
+    <div id="mcpClientModal" class="settings-modal">
+        <div class="settings-content">
+            <h2 class="text-xl font-bold mb-4">MCP Server Connections</h2>
+            
+            <div class="form-group">
+                <label class="form-label" for="mcpServerName">Server Name</label>
+                <input type="text" id="mcpServerName" class="form-input" placeholder="My MCP Server">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="mcpServerUrl">WebSocket URL</label>
+                <input type="text" id="mcpServerUrl" class="form-input" placeholder="ws://localhost:3000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="mcpServerDesc">Description (Optional)</label>
+                <input type="text" id="mcpServerDesc" class="form-input" placeholder="Server description">
+            </div>
+            
+            <div class="mb-4">
+                <button class="button button-primary" id="connectMcpBtn">Connect</button>
+            </div>
+            
+            <div id="connectedServersList" class="space-y-2 max-h-60 overflow-y-auto">
+                <!-- Connected servers will be listed here -->
+            </div>
+            
+            <div class="button-group">
+                <button class="button button-secondary" id="closeMcpClientBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Grimoire Summoner Modal -->
+    <div id="grimoireSummonerModal" class="settings-modal">
+        <div class="settings-content">
+            <h2 class="text-xl font-bold mb-4 text-purple-800">🌟 Summon Remote Grimoire</h2>
+            <p class="text-sm text-gray-600 mb-6">Invoke forbidden knowledge from remote repositories by summoning their mystical powers.</p>
+            
+            <div class="form-group">
+                <label class="form-label" for="grimoireName">Grimoire Name</label>
+                <input type="text" id="grimoireName" class="form-input" placeholder="Ancient Calculator" required>
+                <small class="text-gray-500">A mystical name for your summoned grimoire</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="grimoireRepository">Repository URL</label>
+                <input type="text" id="grimoireRepository" class="form-input" placeholder="https://github.com/user/repo.git" required>
+                <small class="text-gray-500">The forbidden repository containing the grimoire's power</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="grimoireCommand">Summoning Command</label>
+                <select id="grimoireCommand" class="form-input">
+                    <option value="uvx">uvx (Python/UV)</option>
+                    <option value="npx">npx (Node.js)</option>
+                    <option value="python">python</option>
+                    <option value="node">node</option>
+                </select>
+                <small class="text-gray-500">The incantation method to invoke the grimoire</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="grimoireArgs">Additional Arguments</label>
+                <input type="text" id="grimoireArgs" class="form-input" placeholder="mcp-server --port 8081">
+                <small class="text-gray-500">Extra parameters for the summoning ritual (optional)</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="grimoireDescription">Description</label>
+                <textarea id="grimoireDescription" class="form-input" rows="3" placeholder="A powerful grimoire that grants the ability to..."></textarea>
+                <small class="text-gray-500">Describe the forbidden knowledge this grimoire contains</small>
+            </div>
+            
+            <div class="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <h3 class="font-semibold text-purple-800 mb-2">🔮 Summoning Preview</h3>
+                <code id="summoningPreview" class="text-sm text-purple-700 bg-purple-100 p-2 rounded block">
+                    uvx --from git+https://github.com/user/repo.git mcp-server
+                </code>
+            </div>
+            
+            <div class="mb-4 flex gap-2">
+                <button class="button button-primary bg-purple-700 hover:bg-purple-600" id="summonBtn">
+                    🌟 Begin Summoning Ritual
+                </button>
+                <button class="button button-secondary" id="loadExampleBtn">
+                    📖 Load Example
+                </button>
+            </div>
+            
+            <div id="activeGrimoiresList" class="space-y-2 max-h-60 overflow-y-auto">
+                <h3 class="font-semibold text-gray-800 mb-2">📚 Active Grimoires</h3>
+                <!-- Active grimoires will be listed here -->
+            </div>
+            
+            <div class="button-group">
+                <button class="button button-secondary" id="closeGrimoireBtn">Close Tome</button>
+            </div>
+        </div>
+    </div>
     
     <script src="renderer.js"></script>
 </body>

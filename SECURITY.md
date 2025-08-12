@@ -10,10 +10,10 @@ Currently, we support security updates for the following versions:
 
 ## Reporting a Vulnerability
 
-We take the security of Gemini Desktop seriously. If you believe you've found a security vulnerability, please follow these steps:
+We take the security of Forbidden Library seriously. If you believe you've found a security vulnerability, please follow these steps:
 
 1. **Do not disclose the vulnerability publicly**
-2. **Email the details to [your-email@example.com]**
+2. **Email the details to sorrowscry86@voidcat.org**
    - Include a description of the vulnerability
    - Steps to reproduce
    - Potential impact

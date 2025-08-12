@@ -3,7 +3,7 @@ const { MCPProtocol, MCPCapabilities, MCPTool, MCPResource, MCPPrompt, MCPConten
 
 class MCPServer {
     constructor(config = {}) {
-        this.name = config.name || 'Gemini Desktop MCP Server';
+        this.name = config.name || 'Forbidden Library MCP Server';
         this.version = config.version || '1.0.0';
         this.host = config.host || 'localhost';
         this.port = config.port || 8080;
@@ -166,7 +166,7 @@ class MCPServer {
                 required: ['name']
             },
             async (args) => {
-                return `Hello ${args.name}! Welcome to the Gemini Desktop MCP server. How can I assist you today?`;
+                return `Hello ${args.name}! Welcome to the Forbidden Library MCP server. How can I assist you today?`;
             }
         );
     }
@@ -464,3 +464,5 @@ class MCPServer {
         ws.send(JSON.stringify(notification));
     }
 }
+
+module.exports = MCPServer;
