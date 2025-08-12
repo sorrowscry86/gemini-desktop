@@ -44,10 +44,12 @@ async function generateText(prompt, modelName = "gemini-2.0-flash-exp", useRAG =
       finalPrompt = await documentProcessor.augmentPromptWithContext(prompt);
     }
     
-    const model = geminiClient.getGenerativeModel({ model: modelName });
-    const result = await model.generateContent(finalPrompt);
-    const response = await result.response;
-    const text = response.text();
+    const result = await geminiClient.models.generateContent({
+      model: modelName,
+      contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
+    });
+    const response = result.response;
+    const text = response.candidates[0]?.content?.parts[0]?.text || 'No response generated';
     return text;
   } catch (error) {
     console.error(error);
