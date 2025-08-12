@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const fs = require('fs').promises;
+const fsSync = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 

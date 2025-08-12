@@ -32,7 +32,7 @@ async function loadApiKey() {
     }
 }
 
-async function generateText(prompt, modelName = "gemini-1.5-flash", useRAG = false) {
+async function generateText(prompt, modelName = "gemini-2.0-flash-exp", useRAG = false) {
   if (!geminiClient) {
     return 'API key not configured. Please set it in the settings.';
   }
@@ -431,7 +431,7 @@ function registerIpcHandlers() {
 
     // Enhanced text generation with RAG
     ipcMain.handle('generate-text', async (event, prompt, options = {}) => {
-        const { model = 'gemini-1.5-flash', useRAG = false } = options;
+        const { model = 'gemini-2.0-flash-exp', useRAG = false } = options;
         return await generateText(prompt, model, useRAG);
     });
 
