@@ -32,7 +32,7 @@ async function loadApiKey() {
     }
 }
 
-async function generateText(prompt, modelName = "gemini-1.5-flash", useRAG = false) {
+async function generateText(prompt, modelName = "gemini-2.0-flash-exp", useRAG = false) {
   if (!geminiClient) {
     return 'API key not configured. Please set it in the settings.';
   }
@@ -44,10 +44,12 @@ async function generateText(prompt, modelName = "gemini-1.5-flash", useRAG = fal
       finalPrompt = await documentProcessor.augmentPromptWithContext(prompt);
     }
     
-    const model = geminiClient.getGenerativeModel({ model: modelName });
-    const result = await model.generateContent(finalPrompt);
-    const response = await result.response;
-    const text = response.text();
+    const result = await geminiClient.models.generateContent({
+      model: modelName,
+      contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
+    });
+    const response = result.response;
+    const text = response.candidates[0]?.content?.parts[0]?.text || 'No response generated';
     return text;
   } catch (error) {
     console.error(error);
@@ -431,7 +433,7 @@ function registerIpcHandlers() {
 
     // Enhanced text generation with RAG
     ipcMain.handle('generate-text', async (event, prompt, options = {}) => {
-        const { model = 'gemini-1.5-flash', useRAG = false } = options;
+        const { model = 'gemini-2.0-flash-exp', useRAG = false } = options;
         return await generateText(prompt, model, useRAG);
     });
 

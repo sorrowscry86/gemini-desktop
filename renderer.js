@@ -3,7 +3,7 @@
 class ForbiddenLibrary {
     constructor() {
         this.apiKey = '';
-        this.model = 'gemini-1.5-flash';
+        this.model = 'gemini-2.0-flash-exp';
         this.temperature = 0.7;
         this.ragEnabled = false;
         this.conversation = [];
